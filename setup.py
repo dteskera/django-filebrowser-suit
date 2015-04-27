@@ -1,15 +1,16 @@
 import os
 from setuptools import setup, find_packages
 
+
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
 setup(
-    name='django-filebrowser-no-grappelli',
+    name='django-filebrowser-suit',
     version='3.5.7',
-    description='Media-Management no Grappelli',
-    long_description = read('README.rst'),
-    url = 'https://github.com/smacker/django-filebrowser-no-grappelli',
+    description='Media-Management for Django Suit',
+    long_description=read('README.rst'),
+    url='https://github.com/dteskera/django-filebrowser-suit',
     download_url='',
     author='Patrick Kranzlmueller, Axel Swoboda (vonautomatisch)',
     author_email='office@vonautomatisch.at',
@@ -34,5 +35,5 @@ setup(
         'Programming Language :: Python :: 3.2',
         'Programming Language :: Python :: 3.3',
     ],
-    zip_safe = False
+    zip_safe=False
 )
