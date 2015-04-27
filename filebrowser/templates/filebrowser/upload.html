@@ -28,7 +28,7 @@
 
                 template: '<div class="qq-uploader">' +
                     '<div class="qq-upload-drop-area"><span>{% trans "Drop files here to upload" %}</span></div>' +
-                    '<div class="qq-upload-button">{% trans "Upload a file" %}</div>' +
+                    '<div class="qq-upload-button btn btn-success"><i class="icon-circle-arrow-up icon-white"></i>&nbsp;{% trans "Upload a file" %}</div>' +
                     '<div class="qq-upload-list"></div>' +
                 '</div>',
 
@@ -97,12 +97,14 @@
 
 <!-- CONTENT -->
 {% block content %}
-<div id="content-main">
-    <form>
-        <div>
+{% if is_popup %}{% include "filebrowser/include/breadcrumbs.html" %}{% endif %}
+<div id="content-main" class="inner-two-columns">
+    <form class="form-horizontal">
+      <div class="inner-center-column">
+        <div class="tab-content tab-content-main">
             <fieldset class="module aligned">
-            <div class="form-row" id="file-uploader">
-                <div>
+            <div class="control-group form-row" id="file-uploader">
+                <div class="controls">
                     <noscript>
                         {% trans "Please enable Javascript to upload files." %}
                     </noscript>
@@ -111,9 +113,12 @@
             </fieldset>
             <fieldset class="module aligned">
                 <h2>{% trans "Help" %}</h2>
-                <div class="form-row">
-                    <div>
+                <div class="control-group form-row">
+                  <div>
+                    <div class="control-label">
                         <label class="required">{% trans "Allowed" %}</label>
+                    </div>
+                    <div class="controls">
                         <p>
                         {% for extension in settings_var.EXTENSIONS.items %}
                             {% ifnotequal extension.0 'Folder' %}
@@ -122,17 +127,25 @@
                         {% endfor %}
                         </p>
                     </div>
+                  </div>
                 </div>
-                <div class="form-row">
-                    <div>
+                <div class="control-group form-row">
+                  <div>
+                    <div class="control-label">
                         <label class="required">{% trans "Max. Filesize" %}</label>
+                    </div>
+                    <div class="controls">
                         <p>{{ settings_var.MAX_UPLOAD_SIZE|filesizeformat }}</p>
                     </div>
+                  </div>
                 </div>
                 {% if settings_var.NORMALIZE_FILENAME or settings_var.CONVERT_FILENAME %}
-                    <div class="form-row">
-                        <div>
+                    <div class="control-group form-row">
+                      <div>
+                        <div class="control-label">
                             <label class="required">{% trans "Filename" %}</label>
+                        </div>
+                        <div class="controls">
                             {% if settings_var.NORMALIZE_FILENAME %}
                                 <p>{% trans "The Name will be normalized by converting or stripping all non-standard characters." %}</p>
                             {% endif %}
@@ -140,10 +153,12 @@
                                 <p>{% trans "The Name will be converted to lowercase. Spaces will be replaced with underscores." %}</p>
                             {% endif %}
                         </div>
+                      </div>
                     </div>
                 {% endif %}
             </fieldset>
         </div>
+      </div>
     </form>
 </div>
 {% endblock %}

@@ -7,7 +7,7 @@ The FileBrowser is an extension to the `Django <http://www.djangoproject.com>`_ 
 
 * browse directories on your server and upload/delete/edit/rename files.
 * include images/documents to your models/database using the ``FileBrowseField``.
-* select images/documents with TinyMCE.
+* select images/documents with TinyMCE. (v4)
 
 Requirements
 ------------
@@ -18,7 +18,7 @@ FileBrowser 3.5 requires
 * Pillow (https://github.com/python-imaging/Pillow)
 
 No Grappelli
------------
+------------
 
 This fork removes the dependency on Grappelli.
 
@@ -26,10 +26,17 @@ This fork removes the dependency on Grappelli.
    :scale: 50 %
    :alt: django filebrowser no grappelli
 
+Django Suit
+-----------
+
+This fork is tweaked for using with django-suit
+
+
+
 Installation
 ------------
 
-    pip install -e git+git://github.com/smacker/django-filebrowser-no-grappelli.git#egg=django-filebrowser
+    pip install -e git+git://github.com/dteskera/django-filebrowser-suit.git#egg=django-filebrowser
 
 Documentation
 -------------

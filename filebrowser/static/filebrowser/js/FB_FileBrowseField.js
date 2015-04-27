@@ -1,5 +1,5 @@
 function FileSubmit(FilePath, FileURL, ThumbURL, FileType) {
-    
+
     // var input_id=window.name.split("___").join(".");
     var input_id=window.name.replace(/____/g,'-').split("___").join(".");
     var preview_id = 'preview_' + input_id;
@@ -11,7 +11,7 @@ function FileSubmit(FilePath, FileURL, ThumbURL, FileType) {
     previewimage = opener.document.getElementById(previewimage_id);
     // set new value for input field
     input.value = FilePath;
-    
+
     if (ThumbURL && FileType != "") {
         // selected file is an image and thumbnail is available:
         // display the preview-image (thumbnail)
@@ -19,7 +19,7 @@ function FileSubmit(FilePath, FileURL, ThumbURL, FileType) {
         previewlink.setAttribute("href", FileURL);
         previewlink.setAttribute("target", "_blank");
         previewimage.setAttribute("src", ThumbURL);
-        preview.setAttribute("style", "display:block");
+        preview.setAttribute("style", "display:inline-block");
     } else {
         // hide preview elements
         previewlink.setAttribute("href", "");
@@ -29,4 +29,3 @@ function FileSubmit(FilePath, FileURL, ThumbURL, FileType) {
     }
     this.close();
 }
-

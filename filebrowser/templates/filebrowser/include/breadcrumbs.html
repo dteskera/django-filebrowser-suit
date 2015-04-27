@@ -1,31 +1,28 @@
 {% load i18n fb_tags %}
 {% load url from future %}
 
+{% if not query.pop or breadcrumbs %}
 <div class="breadcrumbs">
-    {% if not query.pop %}
-        <a href="../../">{% trans "Home" %}</a> &rsaquo;
-    {% endif %}
+  {% if not query.pop %}
+  <a href="../../">{% trans "Home" %}</a><span class="divider">&raquo;</span>
+  {% endif %}
 
-    {% if breadcrumbs or breadcrumbs_title %}
-        <a href="{% url 'filebrowser:fb_browse' %}{% query_string "" "q,dir,filename,p" %}">{% trans 'FileBrowser' %}</a> &rsaquo;
+  {% if breadcrumbs or breadcrumbs_title %}
+  <a href="{% url 'filebrowser:fb_browse' %}{% query_string "" "q,dir,filename,p" %}">{% trans 'FileBrowser' %}</a><span class="divider">&raquo;</span>
+  {% else %}
+  <span class="active">{% trans 'FileBrowser' %}</span>
+  {% endif %}
+
+  {% for item in breadcrumbs %}
+    {% if not forloop.last or breadcrumbs_title %}
+  <a href="{% url 'filebrowser:fb_browse' %}{% query_string "" "q,dir,filename,p" %}&amp;dir={{ item.1|urlencode }}">{{ item.0 }}</a><span class="divider">&raquo;</span>
     {% else %}
-        {% trans 'FileBrowser' %}
+  <span class="active">{{ item.0 }}</a>
     {% endif %}
+  {% endfor %}
 
-    {% for item in breadcrumbs %}
-        {% if not forloop.last %}
-            <a href="{% url 'filebrowser:fb_browse' %}{% query_string "" "q,dir,filename,p" %}&amp;dir={{ item.1|urlencode }}">{{ item.0 }}</a>
-        {% else %}
-            {% if breadcrumbs_title %}
-                <a href="{% url 'filebrowser:fb_browse' %}{% query_string "" "q,dir,filename,p" %}&amp;dir={{ item.1|urlencode }}">{{ item.0 }}</a> &rsaquo;
-            {% else %}
-                {{ item.0 }} &rsaquo;
-            {% endif %}
-        {% endif %}
-    {% endfor %}
-
-    {% if breadcrumbs_title %}
-        {{ breadcrumbs_title }}
-    {% endif %}
-</ul>
+  {% if breadcrumbs_title %}
+  <span class="active">{{ breadcrumbs_title }}</span>
+  {% endif %}
 </div>
+{% endif %}

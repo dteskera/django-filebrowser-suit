@@ -18,15 +18,28 @@
 
 <!-- CONTENT -->
 {% block content %}
-<div id="content-main">
-    <form action="{% query_string '' 'p' %}" method="post">{% fb_csrf_token %}
-        <div>
+{% if is_popup %}{% include "filebrowser/include/breadcrumbs.html" %}{% endif %}
+<div id="content-main" class="inner-two-columns">
+    <form action="{% query_string '' 'p' %}" method="post" class="form-horizontal">
+      <div class="inner-right-column" style="top:10px;">
+        <div class="box save-box">
+          <div class="submit-row clearfix">
+            <button type="submit" class="btn btn-high btn-info">{% trans 'Submit' %}</button>
+          </div>
+        </div>
+      </div>
+      <div class="inner-center-column">
+      {% fb_csrf_token %}
+        <div class="tab-content tab-content-main">
             {% if form.errors %}<p class="errornote">{% trans 'Please correct the following errors.' %}</p>{% endif %}
-            <fieldset class="module aligned wide">
-                <div class="form-row field-{{ form.name.name }}{% if form.name.errors %} errors{% endif %}">
+            <fieldset class="module aligned first">
+                <div class="control-group form-row field-{{ form.name.name }}{% if form.name.errors %} errors{% endif %}">
                     {% if form.name.errors %}{{ form.name.errors }}{% endif %}
                     <div>
+                      <div class="control-label">
                         <label class="required" for="id_dir_name">{{ form.name.label }}</label>
+                      </div>
+                      <div class="controls">
                         {{ form.name }}
                         <p class="help">
                             {{ form.name.help_text|safe }}
@@ -40,13 +53,12 @@
                                 {% endif %}
                             {% endif %}
                         </p>
+                      </div>
                     </div>
                 </div>
             </fieldset>
-            <div class="submit-row">
-                <input type="submit" value="{% trans 'Submit' %}" class="default" />
-            </div>
         </div>
+      </div>
     </form>
 </div>
 {% endblock %}

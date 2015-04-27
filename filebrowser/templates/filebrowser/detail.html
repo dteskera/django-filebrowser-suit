@@ -19,29 +19,48 @@
 
 <!-- CONTENT -->
 {% block content %}
-<div id="content-main">
-    <form action="{% query_string "" "filter_date,filter_type,q,p" %}" method="post">{% csrf_token %}
-        <div>
+<div id="content-main" class="inner-two-columns">
+    <form action="{% query_string "" "filter_date,filter_type,q,p" %}" method="post" class="form-horizontal">
+      <div class="inner-right-column" style="top:10px;">
+        <div class="box save-box">
+          <div class="submit-row clearfix">
+            <button type="submit" class="btn btn-high btn-info">{% trans 'Save' %}</button>
+            <button type="submit" class="btn btn-high" name="_continue">{% trans 'Save and continue editing' %}</button>
+            <a href="{% url 'filebrowser:fb_delete_confirm' %}{% query_string %}" class="text-error deletelink">{% trans "Delete" %}</a>
+          </div>
+        </div>
+      </div>
+      <div class="inner-center-column">
+        {% csrf_token %}
+        <div class="tab-content tab-content-main">
             {% if form.errors %}<p class="errornote">{% trans 'Please correct the following errors.' %}</p>{% endif %}
-            <fieldset class="module aligned">
-                <div class="form-row field-{{ form.name.name }}{% if form.name.errors %} errors{% endif %}">
+            <fieldset class="module aligned first">
+                <div class="control-group form-row field-{{ form.name.name }}{% if form.name.errors %} errors{% endif %}">
                     {% if form.name.errors %}{{ form.name.errors }}{% endif %}
                     <div>
+                      <div class="control-label">
                         <label class="required" for="id_name">{{ form.name.label }}</label>
+                      </div>
+                      <div class="controls">
                         {{ form.name }}
                         {% if form.name.help_text %}<p class="help">{{ form.name.help_text|safe }}</p>{% endif %}
+                      </div>
                     </div>
                 </div>
             </fieldset>
             {% if fileobject.filetype == "Image" %}
             <fieldset class="module aligned">
                 <h2>{% trans "Edit" %}</h2>
-                <div class="form-row {% if form.custom_action.errors %}errors{% endif %}">
+                <div class="control-group form-row {% if form.custom_action.errors %}errors{% endif %}">
                     {% if form.custom_action.errors %}{{ form.custom_action.errors }}{% endif %}
                     <div>
+                      <div class="control-label">
                         <label class="required" for="id_custom_action">{{ form.custom_action.label }}</label>
+                      </div>
+                      <div class="controls">
                         {{ form.custom_action }}
                         {% if form.custom_action.help_text %}<p class="help">{{ form.custom_action.help_text|safe }}</p>{% endif %}
+                      </div>
                     </div>
                 </div>
             </fieldset>
@@ -49,12 +68,16 @@
             {% if fileobject.filetype == "Folder" %}
             <fieldset class="module aligned">
                 <h2>{% trans "Folder Information" %}</h2>
-                <div class="form-row">
+                <div class="control-group form-row">
                     <div>
+                      <div class="control-label">
                         <label>{% trans "Date" %}</label>
+                      </div>
+                      <div class="controls">
                         <p>
                             {{ fileobject.datetime|date:"N j, Y" }}
                         </p>
+                      </div>
                     </div>
                 </div>
             </fieldset>
@@ -62,37 +85,53 @@
             {% if fileobject.filetype != "Folder" %}
             <fieldset class="module aligned">
                 <h2>{% trans "File Information" %}</h2>
-                <div class="form-row">
+                <div class="control-group form-row">
                     <div>
+                      <div class="control-label">
                         <label>{% trans "URL" %}</label>
+                      </div>
+                      <div class="controls">
                         <p>
                             <a href="{{ fileobject.url }}">{{ fileobject.url }}</a>
                         </p>
+                      </div>
                     </div>
                 </div>
-                <div class="form-row">
+                <div class="control-group form-row">
                     <div>
+                      <div class="control-label">
                         <label>{% trans "Filesize" %}</label>
+                      </div>
+                      <div class="controls">
                         <p>
                             {{ fileobject.filesize|filesizeformat }}
                         </p>
+                      </div>
                     </div>
                 </div>
-                <div class="form-row">
+                <div class="control-group form-row">
                     <div>
+                      <div class="control-label">
                         <label>{% trans "Date" %}</label>
+                      </div>
+                      <div class="controls">
                         <p>
                             {{ fileobject.datetime|date:"N j, Y" }}
                         </p>
+                      </div>
                     </div>
                 </div>
                 {% if fileobject.filetype == "Image" %}
-                    <div class="form-row">
+                    <div class="control-group form-row">
                         <div>
+                          <div class="control-label">
                             <label>{% trans "Size" %}</label>
+                          </div>
+                          <div class="controls">
                             <p>
                                 {{ fileobject.width }} x {{ fileobject.height }} px
                             </p>
+                          </div>
                         </div>
                     </div>
                 {% endif %}
@@ -102,10 +141,14 @@
             <fieldset class="module aligned wide">
                 <h2>{% trans "Image Versions" %}</h2>
                 {% if settings_var.ADMIN_THUMBNAIL %}
-                <div class="form-row">
+                <div class="control-group form-row">
                     <div>
+                      <div class="control-label">
                         <label>{% trans "Thumbnail" %}</label>
+                      </div>
+                      <div class="controls">
                         <img src="{% version fileobject.path settings_var.ADMIN_THUMBNAIL %}" title="{% trans 'View Image' %}" />
+                      </div>
                     </div>
                 </div>
                 {% endif %}
@@ -113,24 +156,22 @@
                     {% for version in settings_var.ADMIN_VERSIONS %}
                         {% version_object fileobject version as image_version %}
                         {% version_setting version %}
-                        <div class="form-row">
+                        <div class="control-group form-row">
                             <div>
+                              <div class="control-label">
                                 <label>{{ version_setting.verbose_name }}</label>
+                              </div>
+                              <div class="controls">
                                 <img src="{{ image_version.url }}" />
+                              </div>
                             </div>
                         </div>
                     {% endfor %}
                 {% endif %}
             </fieldset>
             {% endif %}
-            <div class="submit-row">
-                <p class="deletelink-box">
-                    <a href="{% url 'filebrowser:fb_delete_confirm' %}{% query_string %}" class="deletelink">{% trans "Delete" %}</a>
-                </p>
-                <input type="submit" value="{% trans 'Save' %}" class="default" />
-                <input type="submit" value="{% trans 'Save and continue editing' %}" class="" name="_continue" />
-            </div>
         </div>
+      </div>
     </form>
 </div>
 {% endblock %}
