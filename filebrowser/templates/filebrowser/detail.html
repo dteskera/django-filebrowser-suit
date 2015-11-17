@@ -17,8 +17,11 @@
 <!-- BREADCRBUMBS -->
 {% block breadcrumbs %}{% include "filebrowser/include/breadcrumbs.html" %}{% endblock %}
 
+{% block content_title %}{% endblock %}
+
 <!-- CONTENT -->
 {% block content %}
+{% if is_popup %}{% include "filebrowser/include/breadcrumbs.html" %}{% endif %}
 <div id="content-main" class="inner-two-columns">
     <form action="{% query_string "" "filter_date,filter_type,q,p" %}" method="post" class="form-horizontal">
       <div class="inner-right-column" style="top:10px;">

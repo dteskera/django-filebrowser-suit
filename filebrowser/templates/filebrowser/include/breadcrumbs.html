@@ -1,7 +1,6 @@
 {% load i18n fb_tags %}
 {% load url from future %}
 
-{% if not query.pop or breadcrumbs %}
 <div class="breadcrumbs">
   {% if not query.pop %}
   <a href="../../">{% trans "Home" %}</a><span class="divider">&raquo;</span>
@@ -25,4 +24,3 @@
   <span class="active">{{ breadcrumbs_title }}</span>
   {% endif %}
 </div>
-{% endif %}
