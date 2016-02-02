@@ -1,9 +1,8 @@
 {% load i18n fb_tags %}
-{% load url from future %}
 
 <div class="breadcrumbs">
   {% if not query.pop %}
-  <a href="../../">{% trans "Home" %}</a><span class="divider">&raquo;</span>
+  <a href="{% url 'admin:index' %}">{% trans "Home" %}</a><span class="divider">&raquo;</span>
   {% endif %}
 
   {% if breadcrumbs or breadcrumbs_title %}

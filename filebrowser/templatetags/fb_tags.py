@@ -2,6 +2,8 @@
 
 # DJANGO IMPORTS
 from django import template
+from django.template import TemplateSyntaxError
+from django.utils.html import mark_safe
 from django.utils.http import urlquote
 
 # FILEBROWSER IMPORTS
@@ -53,7 +55,6 @@ def get_query_string(p, new_params=None, remove=None):
         remove = []
     for r in remove:
         for k in list(p):
-            #if k.startswith(r):
             if k == r:
                 del p[k]
     for k, v in new_params.items():
@@ -151,15 +152,10 @@ def get_file_extensions(qs):
     else:
         for k, v in EXTENSIONS.items():
             for item in v:
-                if item: extensions.append(item)
-    return extensions
+                if item:
+                    extensions.append(item)
+    extensions = '","'.join(extensions)
+    extensions = '["%s"]' % extensions
+    return mark_safe(extensions)
 
 register.simple_tag(get_file_extensions)
-
-
-try:  # Import cycle from future for django 1.7+
-    from django.templatetags.future import cycle
-except ImportError:
-    pass
-else:
-    register.tag(cycle)

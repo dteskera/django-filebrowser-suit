@@ -2,23 +2,29 @@
 
 # PYTHON IMPORTS
 import os
-import ntpath
 import posixpath
 import shutil
 
 # DJANGO IMPORTS
 from django.conf import settings
 from django.test import TestCase
-from django.contrib.auth.models import User
-from django.utils.encoding import filepath_to_uri
 from django.template import Context, Template, TemplateSyntaxError
 
 # FILEBROWSER IMPORTS
 import filebrowser
-from filebrowser.settings import DEFAULT_PERMISSIONS
-from filebrowser.base import FileObject, FileListing
-from filebrowser.templatetags.fb_versions import version, version_object, version_setting
+from filebrowser.settings import DEFAULT_PERMISSIONS, STRICT_PIL
+from filebrowser.base import FileObject
 from filebrowser.sites import site
+from filebrowser.utils import scale_and_crop
+
+# PIL import
+if STRICT_PIL:
+    from PIL import Image
+else:
+    try:
+        from PIL import Image
+    except ImportError:
+        import Image
 
 TESTS_PATH = os.path.dirname(os.path.abspath(__file__))
 FILEBROWSER_PATH = os.path.split(TESTS_PATH)[0]
@@ -96,6 +102,121 @@ class VersionTemplateTagsTests(TestCase):
         self.f_folder = FileObject(os.path.join(self.directory, self.tmpdir_name), site=site)
         self.f_placeholder = FileObject(os.path.join(self.directory, self.tmpdir_name_ph, "testimage.jpg"), site=site)
 
+    def test_scale_crop(self):
+        """
+        Test scale/crop functionality
+        scale_and_crop(im, width, height, opts)
+
+        self.f_image (original): width 1000, height 750
+        """
+
+        # new width 500 > 500/375
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 500, "", "")
+        self.assertEqual(version.size[0], 500)
+        self.assertEqual(version.size[1], 375)
+        # new height 375 > 500/375
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, "", 375, "")
+        self.assertEqual(version.size[0], 500)
+        self.assertEqual(version.size[1], 375)
+
+        # SIZE TOO BIG, BUT NO UPSCALE DEFINED
+
+        # new width 1500, no upscale > False
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 1500, "", "")
+        self.assertEqual(version, False)
+        # new height 1125, no upscale > False
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, "", 1125, "")
+        self.assertEqual(version, False)
+        # new width 1500, height 1125, no upscale > False
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 1500, 1125, "")
+        self.assertEqual(version, False)
+
+        # SIZE TOO BIG, UPSCALE DEFINED
+
+        # new width 1500, upscale > 1500/1125
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 1500, "", "upscale")
+        self.assertEqual(version.size[0], 1500)
+        self.assertEqual(version.size[1], 1125)
+        # new height 1125, upscale > 1500/1125
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, "", 1125, "upscale")
+        self.assertEqual(version.size[0], 1500)
+        self.assertEqual(version.size[1], 1125)
+        # new width 1500, new height 1125, upscale > 1500/1125
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 1500, 1125, "upscale")
+        self.assertEqual(version.size[0], 1500)
+        self.assertEqual(version.size[1], 1125)
+        # new width 1500, new height 1125, upscale > 1500/1125
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 1500, 0, "upscale")
+        self.assertEqual(version.size[0], 1500)
+        self.assertEqual(version.size[1], 1125)
+
+        # SIZE TOO SMALL, UPSCALE DEFINED
+
+        # width too small, no upscale
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 500, "", "upscale")
+        self.assertEqual(version.size[0], 500)
+        self.assertEqual(version.size[1], 375)
+        # height too small, no upscale
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, "", 375, "upscale")
+        self.assertEqual(version.size[0], 500)
+        self.assertEqual(version.size[1], 375)
+
+        # CROPPING
+
+        # new width 500 and height 500 w. crop > 500/500
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 500, 500, "crop")
+        self.assertEqual(version.size[0], 500)
+        self.assertEqual(version.size[1], 500)
+        # new width 1500 and height 1500 w. crop > false (upscale missing)
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 1500, 1500, "crop")
+        self.assertEqual(version, False)
+        # new width 1500 and height 1500 w. crop > false (upscale missing)
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 1500, 1500, "crop,upscale")
+        self.assertEqual(version.size[0], 1500)
+        self.assertEqual(version.size[1], 1500)
+
+        # SPECIAL CASES
+
+        # new width 500 and height 1125
+        # new width is smaller than original, but new height is bigger
+        # width has higher priority
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 500, 1125, "")
+        self.assertEqual(version.size[0], 500)
+        self.assertEqual(version.size[1], 375)
+        # same with upscale
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 500, 1125, "upscale")
+        self.assertEqual(version.size[0], 500)
+        self.assertEqual(version.size[1], 375)
+        # new width 1500 and height 375
+        # new width is bigger than original, but new height is smaller
+        # height has higher priority
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 1500, 375, "")
+        self.assertEqual(version.size[0], 500)
+        self.assertEqual(version.size[1], 375)
+        # same with upscale
+        im = Image.open(self.f_image.path_full)
+        version = scale_and_crop(im, 1500, 375, "upscale")
+        self.assertEqual(version.size[0], 500)
+        self.assertEqual(version.size[1], 375)
+
+
     def test_version(self):
         """
         Templatetag version
@@ -105,6 +226,7 @@ class VersionTemplateTagsTests(TestCase):
         filebrowser.base.VERSIONS = {
             'admin_thumbnail': {'verbose_name': 'Admin Thumbnail', 'width': 60, 'height': 60, 'opts': 'crop'},
             'large': {'verbose_name': 'Large', 'width': 600, 'height': '', 'opts': ''},
+            'fixedheight': {'verbose_name': 'Fixed height', 'width': '', 'height': 100, 'opts': ''},
         }
         filebrowser.base.ADMIN_VERSIONS = ['large']
         filebrowser.settings.VERSIONS = filebrowser.base.VERSIONS
@@ -138,11 +260,11 @@ class VersionTemplateTagsTests(TestCase):
         r = t.render(c)
         self.assertEqual(r, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
 
-        # templatetag version with suffix as variable
-        t = Template('{% load fb_versions %}{% version obj.path suffix %}')
-        c = Context({"obj": self.f_image, "suffix": "large"})
+        # fixed height
+        t = Template('{% load fb_versions %}{% version path "fixedheight" %}')
+        c = Context({"obj": self.f_image, "path": "fb_test_directory/fb_tmp_dir/fb_tmp_dir_sub/testimage.jpg"})
         r = t.render(c)
-        self.assertEqual(r, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+        self.assertEqual(r, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_fixedheight.jpg"))
 
         # # FIXME: templatetag version with non-existing path
         # t = Template('{% load fb_versions %}{% version path "large" %}')
@@ -181,8 +303,90 @@ class VersionTemplateTagsTests(TestCase):
         # Check permissions
         if DEFAULT_PERMISSIONS is not None:
             permissions_default = oct(DEFAULT_PERMISSIONS)
-            permissions_file = oct(os.stat(os.path.join(settings.MEDIA_ROOT, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg")).st_mode & 0777)
+            permissions_file = oct(os.stat(os.path.join(settings.MEDIA_ROOT, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg")).st_mode & 0o777)
             self.assertEqual(permissions_default, permissions_file)
+
+    def test_version_as_object(self):
+        """
+        Templatetag version_object
+        """
+        # new settings
+        filebrowser.base.VERSIONS_BASEDIR = "fb_test_directory/_versions"
+        filebrowser.base.VERSIONS = {
+            'admin_thumbnail': {'verbose_name': 'Admin Thumbnail', 'width': 60, 'height': 60, 'opts': 'crop'},
+            'large': {'verbose_name': 'Large', 'width': 600, 'height': '', 'opts': ''},
+        }
+        filebrowser.base.ADMIN_VERSIONS = ['large']
+        filebrowser.settings.VERSIONS = filebrowser.base.VERSIONS
+        filebrowser.templatetags.fb_versions.VERSIONS = filebrowser.base.VERSIONS
+
+        # templatetag version with hardcoded path
+        t = Template('{% load fb_versions %}{% version path "large" as version_large %}{{ version_large.url }}')
+        c = Context({"obj": self.f_image, "path": "fb_test_directory/fb_tmp_dir/fb_tmp_dir_sub/testimage.jpg"})
+        r = t.render(c)
+        self.assertEqual(c["version_large"].url, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+        self.assertEqual(r, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+
+        # templatetag version with obj.path
+        t = Template('{% load fb_versions %}{% version obj.path "large" as version_large %}{{ version_large.url }}')
+        c = Context({"obj": self.f_image})
+        r = t.render(c)
+        self.assertEqual(c["version_large"].url, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+        self.assertEqual(r, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+
+        # templatetag version with obj
+        t = Template('{% load fb_versions %}{% version obj "large" as version_large %}{{ version_large.url }}')
+        c = Context({"obj": self.f_image})
+        r = t.render(c)
+        self.assertEqual(c["version_large"].url, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+        self.assertEqual(r, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+
+        # templatetag version with suffix as variable
+        t = Template('{% load fb_versions %}{% version obj suffix as version_large %}{{ version_large.url }}')
+        c = Context({"obj": self.f_image, "suffix": "large"})
+        r = t.render(c)
+        self.assertEqual(c["version_large"].url, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+        self.assertEqual(r, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+
+        # # FIXME: templatetag version with non-existing path
+        # t = Template('{% load fb_versions %}{% version path "large" as version_large %}{{ version_large.url }}')
+        # c = Context({"obj": self.f_image, "path": "fb_test_directory/fb_tmp_dir/fb_tmp_dir_sub/testimagexxx.jpg"})
+        # r = t.render(c)
+        # self.assertEqual(c["version_large"].url, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+        # self.assertEqual(r, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+
+        # test placeholder with existing image
+        filebrowser.templatetags.fb_versions.PLACEHOLDER = "fb_test_directory/fb_tmp_dir/fb_tmp_placeholder/testimage.jpg"
+        filebrowser.templatetags.fb_versions.SHOW_PLACEHOLDER = True
+        filebrowser.templatetags.fb_versions.FORCE_PLACEHOLDER = True
+        t = Template('{% load fb_versions %}{% version obj suffix as version_large %}{{ version_large.url }}')
+        c = Context({"obj": self.f_image, "suffix": "large"})
+        r = t.render(c)
+        self.assertEqual(c["version_large"].url, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_placeholder/testimage_large.jpg"))
+        self.assertEqual(r, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_placeholder/testimage_large.jpg"))
+
+        filebrowser.templatetags.fb_versions.FORCE_PLACEHOLDER = False
+        t = Template('{% load fb_versions %}{% version obj suffix as version_large %}{{ version_large.url }}')
+        c = Context({"obj": self.f_image, "suffix": "large"})
+        r = t.render(c)
+        self.assertEqual(c["version_large"].url, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+        self.assertEqual(r, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_dir_sub/testimage_large.jpg"))
+
+        # test placeholder with non-existing image
+        filebrowser.templatetags.fb_versions.FORCE_PLACEHOLDER = True
+        t = Template('{% load fb_versions %}{% version obj suffix as version_large %}{{ version_large.url }}')
+        c = Context({"obj": self.f_image_not_exists, "suffix": "large"})
+        r = t.render(c)
+        self.assertEqual(c["version_large"].url, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_placeholder/testimage_large.jpg"))
+        self.assertEqual(r, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_placeholder/testimage_large.jpg"))
+
+        filebrowser.templatetags.fb_versions.FORCE_PLACEHOLDER = False
+        t = Template('{% load fb_versions %}{% version obj suffix as version_large %}{{ version_large.url }}')
+        c = Context({"obj": self.f_image_not_exists, "suffix": "large"})
+        r = t.render(c)
+        self.assertEqual(c["version_large"].url, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_placeholder/testimage_large.jpg"))
+        self.assertEqual(r, os.path.join(settings.MEDIA_URL, "fb_test_directory/_versions/fb_tmp_dir/fb_tmp_placeholder/testimage_large.jpg"))
+
 
     def test_version_object(self):
         """

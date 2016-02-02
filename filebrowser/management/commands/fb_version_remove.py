@@ -3,6 +3,7 @@
 # PYTHON IMPORTS
 import os
 import re
+import sys
 
 # DJANGO IMPORTS
 from django.core.management.base import BaseCommand, CommandError
@@ -10,7 +11,7 @@ from django.conf import settings
 from django.utils.six.moves import input
 
 # FILEBROWSER IMPORTS
-from filebrowser.settings import EXTENSION_LIST, EXCLUDE, DIRECTORY, VERSIONS, EXTENSIONS
+from filebrowser.settings import EXCLUDE, EXTENSIONS
 
 
 class Command(BaseCommand):
@@ -68,7 +69,7 @@ class Command(BaseCommand):
                 self.stdout.write('%s\n' % current_file)
             self.stdout.write('...\n')
             self.stdout.write('...\n')
-            for current_file in files[len(files)-5:]:
+            for current_file in files[len(files) - 5:]:
                 self.stdout.write('%s\n' % current_file)
         else:
             self.stdout.write('\nFiles to remove:\n')

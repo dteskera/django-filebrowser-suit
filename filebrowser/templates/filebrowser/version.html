@@ -6,7 +6,7 @@
 <!-- JAVASCRIPTS -->
 {% block extrahead %}
     {{ block.super }}
-    <script type="text/javascript" src="{% static "admin/js/jquery.min.js" %}"></script>
+    {% comment %}<script type="text/javascript" src="{% static "admin/js/jquery.min.js" %}"></script>{% endcomment %}
     <script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
     {% ifequal query.pop '1' %} <!-- FileBrowseField -->
     <script language="javascript" type="text/javascript" src="{% static "filebrowser/js/FB_FileBrowseField.js" %}"></script>
@@ -43,4 +43,3 @@
         {% endifequal %}
     {% endif %}
 {% endblock %}
-

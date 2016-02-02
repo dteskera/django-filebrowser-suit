@@ -7,8 +7,8 @@ def read(fname):
 
 setup(
     name='django-filebrowser-suit',
-    version='3.5.7',
-    description='Media-Management for Django Suit',
+    version='3.6.1',
+    description='Media-Management no Grappelli',
     long_description=read('README.rst'),
     url='https://github.com/dteskera/django-filebrowser-suit',
     download_url='',
@@ -28,13 +28,10 @@ setup(
         'Operating System :: OS Independent',
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.1',
-        'Programming Language :: Python :: 3.2',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
     ],
-    zip_safe=False
+    zip_safe=False,
 )

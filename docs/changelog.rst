@@ -8,9 +8,30 @@
 Changelog
 =========
 
-3.5.8 (not yet released)
+3.6.2 (not yet released)
 ------------------------
 
+3.6.1 (November 11th, 2015)
+---------------------------
+
+* Compatibility with Django 1.8
+
+3.5.8 (November 8th 2015)
+--------------------------
+
+* New: Sort by multiple attributes.
+* Improved: Add back button from upload page.
+* Improved: Show url after upload
+* Improved: Update video extensions for common HTML5 video types.
+* Improved: Improved Python 3 compatibility.
+* Improved: Version size with crop.
+* Improved: Fix cannot write mode P as JPEG.
+* Fixed: Action pulldown with all documents (not only images).
+* Fixed: Version scaling with fixed width and auto height (added tests as well).
+* Fixed: Compatibility with Django 1.4.
+* Fixed: Management command when generating all versions (fb_version_generate).
+* Fixed: Home link with breadcrumbs.
+* Fixed: Removed cycle templatetag (for compatibility with Django 1.4 to 1.7).
 
 3.5.7 (December 14th 2014)
 ---------------------------
@@ -134,4 +155,4 @@ Changelog
 3.4.0 (15/11/2011)
 ------------------
 
-* Final release of 3.4, see :ref:`releasenotes`
+For further information, see :ref:`releasenotes`.

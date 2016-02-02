@@ -2,7 +2,6 @@
 
 <!-- LOADING -->
 {% load admin_static i18n l10n fb_tags %}
-{% load url from future %}
 
 <!-- STYLESHEETS -->
 {% block extrastyle %}
@@ -14,7 +13,7 @@
 <!-- JAVASCRIPTS -->
 {% block extrahead %}
     {{ block.super }}
-    <script type="text/javascript" src="{% static "admin/js/jquery.min.js" %}"></script>
+    {% comment %}<script type="text/javascript" src="{% static "admin/js/jquery.min.js" %}"></script>{% endcomment %}
     <script type="text/javascript" src="{% static "admin/js/jquery.init.js" %}"></script>
     <script type="text/javascript" src="{% static "admin/js/collapse.min.js" %}"></script>
     <script type="text/javascript" src="../../jsi18n/"></script>
@@ -78,7 +77,7 @@
                 },
                 onComplete: function(id, fileName, resp){
                     if (resp.success) {
-                        this.getItem(id).find('.qq-upload-file').html(resp.filename);
+                        this.getItem(id).find('.qq-upload-file').html('<a href="' + resp.url + '">'+ resp.filename + '</a>');
                     }
                 },
                 showMessage: function(message){ alert(message); }
@@ -104,11 +103,16 @@
         <div class="tab-content tab-content-main">
             <fieldset class="module aligned">
             <div class="control-group form-row" id="file-uploader">
-                <div class="controls">
+                <div class="controls form-col">
                     <noscript>
                         {% trans "Please enable Javascript to upload files." %}
                     </noscript>
                 </div>
+            </div>
+            <div class="form-row" id="back-button">
+                {% with breadcrumbs|last as last_breadcrumb %}
+                    <a class="ui button" href="{% url 'filebrowser:fb_browse' %}{% query_string "" "q,dir,filename,p" %}&amp;dir={{ last_breadcrumb.1|urlencode }}">{% trans 'Return to uploads' %}</a>
+                {% endwith %}
             </div>
             </fieldset>
             <fieldset class="module aligned">

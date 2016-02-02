@@ -5,32 +5,23 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 import re
 
-# PATH AND URL SETTINGS
-
-# Main Media Settings
-# WARNING: FILEBROWSER_MEDIA_ROOT and FILEBROWSER_MEDIA_URL will be removed with Filebrowser 3.6.
-# Read the documentation on FileBrowser's storages (http://readthedocs.org/docs/django-filebrowser/en/latest/file_storages.html)
-MEDIA_ROOT = getattr(settings, "FILEBROWSER_MEDIA_ROOT", settings.MEDIA_ROOT)
-MEDIA_URL = getattr(settings, "FILEBROWSER_MEDIA_URL", settings.MEDIA_URL)
-# Main FileBrowser Directory. This has to be a directory within MEDIA_ROOT.
-# Leave empty in order to browse all files under MEDIA_ROOT.
+# Main FileBrowser Directory. Relative to site.storage.location.
 # DO NOT USE A SLASH AT THE BEGINNING, DO NOT FORGET THE TRAILING SLASH AT THE END.
 DIRECTORY = getattr(settings, "FILEBROWSER_DIRECTORY", 'uploads/')
 
 # EXTENSIONS AND FORMATS
 # Allowed Extensions for File Upload. Lower case is important.
 EXTENSIONS = getattr(settings, "FILEBROWSER_EXTENSIONS", {
-    'Folder': [''],
     'Image': ['.jpg', '.jpeg', '.gif', '.png', '.tif', '.tiff'],
     'Document': ['.pdf', '.doc', '.rtf', '.txt', '.xls', '.csv', '.docx'],
-    'Video': ['.mov', '.wmv', '.mpeg', '.mpg', '.avi', '.rm'],
-    'Audio': ['.mp3', '.mp4', '.wav', '.aiff', '.midi', '.m4p']
+    'Video': ['.mov', '.mp4', '.m4v', '.webm', '.wmv', '.mpeg', '.mpg', '.avi', '.rm'],
+    'Audio': ['.mp3', '.wav', '.aiff', '.midi', '.m4p']
 })
 # Define different formats for allowed selections.
 # This has to be a subset of EXTENSIONS.
 # e.g., add ?type=image to the browse-URL ...
 SELECT_FORMATS = getattr(settings, "FILEBROWSER_SELECT_FORMATS", {
-    'file': ['Folder', 'Image', 'Document', 'Video', 'Audio'],
+    'file': ['Image', 'Document', 'Video', 'Audio'],
     'image': ['Image'],
     'document': ['Document'],
     'media': ['Video', 'Audio'],
@@ -41,7 +32,7 @@ SELECT_FORMATS = getattr(settings, "FILEBROWSER_SELECT_FORMATS", {
 # Directory to Save Image Versions (and Thumbnails). Relative to site.storage.location.
 # If no directory is given, versions are stored within the Image directory.
 # VERSION URL: VERSIONS_BASEDIR/original_path/originalfilename_versionsuffix.extension
-VERSIONS_BASEDIR = getattr(settings, 'FILEBROWSER_VERSIONS_BASEDIR', '')
+VERSIONS_BASEDIR = getattr(settings, 'FILEBROWSER_VERSIONS_BASEDIR', '_versions')
 # Versions Format. Available Attributes: verbose_name, width, height, opts
 VERSIONS = getattr(settings, "FILEBROWSER_VERSIONS", {
     'admin_thumbnail': {'verbose_name': 'Admin Thumbnail', 'width': 60, 'height': 60, 'opts': 'crop'},
@@ -107,9 +98,15 @@ OVERWRITE_EXISTING = getattr(settings, "FILEBROWSER_OVERWRITE_EXISTING", True)
 # Add fake model to show filebrowser in admin dashboard
 SHOW_IN_DASHBOARD = getattr(settings, "FILEBROWSER_SHOW_IN_DASHBOARD", True)
 
+# UPLOAD
+
+# Directory to Save temporary uploaded files (FileBrowseUploadField)
+# Relative to site.storage.location.
+UPLOAD_TEMPDIR = getattr(settings, 'FILEBROWSER_UPLOAD_TEMPDIR', '_temp')
+
 # EXTRA TRANSLATION STRINGS
 
-# The following strings are not availabe within views or templates
+# The following strings are not available within views or templates
 _('Folder')
 _('Image')
 _('Video')
