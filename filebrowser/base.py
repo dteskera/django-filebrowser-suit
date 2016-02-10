@@ -544,11 +544,12 @@ class FileObject():
         if version.mode not in ("L", "RGB"):
             version = version.convert("RGB")
 
+        quality = VERSIONS[version_suffix].get('quality', VERSION_QUALITY)
         # save version
         try:
-            version.save(tmpfile, format=Image.EXTENSION[ext.lower()], quality=VERSION_QUALITY, optimize=(os.path.splitext(version_path)[1] != '.gif'))
+            version.save(tmpfile, format=Image.EXTENSION[ext.lower()], quality=quality, optimize=(os.path.splitext(version_path)[1] != '.gif'))
         except IOError:
-            version.save(tmpfile, format=Image.EXTENSION[ext.lower()], quality=VERSION_QUALITY)
+            version.save(tmpfile, format=Image.EXTENSION[ext.lower()], quality=quality)
         # remove old version, if any
         if version_path != self.site.storage.get_available_name(version_path):
             self.site.storage.delete(version_path)
