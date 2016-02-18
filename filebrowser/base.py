@@ -541,7 +541,7 @@ class FileObject():
                     version = m(version)
 
         # IF need Convert RGB
-        if version.mode not in ("L", "RGB"):
+        if version.mode not in ("L", "RGB", "RGBA"):
             version = version.convert("RGB")
 
         quality = VERSIONS[version_suffix].get('quality', VERSION_QUALITY)
