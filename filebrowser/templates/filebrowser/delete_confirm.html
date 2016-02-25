@@ -10,29 +10,29 @@
 
 <!-- CONTENT -->
 {% block content %}
-{% if is_popup %}{% include "filebrowser/include/breadcrumbs.html" %}{% endif %}
-<div id="content-main" class="inner-two-columns">
+  {% if is_popup %}{% include "filebrowser/include/breadcrumbs.html" %}{% endif %}
   <form action="{% url 'filebrowser:fb_delete' %}{% query_string %}" method="post" class="form-horizontal">
-    <div class="inner-center-column">
-      <p>{% blocktrans with fileobject.filename as escaped_object %}Are you sure you want to delete the {{ object_name }} "{{ escaped_object }}"? All of the following related items will be deleted:{% endblocktrans %}</p>
+    {% csrf_token %}
+    <div class="alert alert-block alert-error">
+      <p class="alert-heading">{% blocktrans with fileobject.filename as escaped_object %}Are you sure you want to delete the {{ object_name }} "{{ escaped_object }}"? All of the following related items will be deleted:{% endblocktrans %}</p>
       <ul>
         <li>{{ fileobject.filename }}</li>
       </ul>
-    {% if filelisting %}
-      <ul>
-      {% for item in filelisting %}
-        <li>{{ item.path_relative_directory }}</li>
-      {% endfor %}
-      <ul>
-    {% endif %}
-    {% if additional_files %}
-      <ul>
-        <li>{% blocktrans with additional_files as escaped_object %}... and {{ escaped_object }} more Files.{% endblocktrans %}</li>
-      </ul>
-    {% endif %}
-      {% csrf_token %}
+      {% if filelisting %}
+        <ul>
+        {% for item in filelisting %}
+          <li>{{ item.path_relative_directory }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+      {% if additional_files %}
+        <ul>
+          <li>{% blocktrans with additional_files as escaped_object %}... and {{ escaped_object }} more Files.{% endblocktrans %}</li>
+        </ul>
+      {% endif %}
+      <br>
       <div>
-        <input type="submit" class="btn btn-info" value="{% trans "Yes, I'm sure" %}" />
+        <input type="submit" class="btn btn-danger" value="{% trans "Yes, I'm sure" %}" />
       </div>
     </div>
   </form>
