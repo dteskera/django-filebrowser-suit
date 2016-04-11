@@ -345,6 +345,12 @@ class FileBrowserSite(object):
         except (EmptyPage, InvalidPage):
             page = p.page(p.num_pages)
 
+        can_create_dirs = True
+        try:
+            can_create_dirs = self.storage.can_create_dirs()
+        except:
+            pass
+
         request.current_app = self.name
         ctx = self._add_each_context({
             'p': p,
@@ -356,7 +362,8 @@ class FileBrowserSite(object):
             'settings_var': get_settings_var(directory=self.directory),
             'breadcrumbs': get_breadcrumbs(query, query.get('dir', '')),
             'breadcrumbs_title': "",
-            'filebrowser_site': self
+            'filebrowser_site': self,
+            'can_create_dirs': can_create_dirs,
         }, request)
         return render(request, 'filebrowser/index.html', ctx)
 
@@ -597,15 +604,19 @@ class FileBrowserSite(object):
                 old_file = smart_text(file_path)
                 new_file = smart_text(uploadedfile)
                 self.storage.move(new_file, old_file, allow_overwrite=True)
-                full_path = FileObject(smart_text(old_file), site=self).path_full
+                smart_name = old_file
             else:
                 file_name = smart_text(uploadedfile)
                 filedata.name = os.path.relpath(file_name, path)
-                full_path = FileObject(smart_text(file_name), site=self).path_full
+                smart_name = file_name
 
-            # set permissions
-            if DEFAULT_PERMISSIONS is not None:
-                os.chmod(full_path, DEFAULT_PERMISSIONS)
+            try:
+                full_path = FileObject(smart_name, site=self).path_full
+                # set permissions
+                if DEFAULT_PERMISSIONS is not None:
+                    os.chmod(full_path, DEFAULT_PERMISSIONS)
+            except NotImplementedError:
+                pass
 
             f = FileObject(smart_text(file_name), site=self)
             signals.filebrowser_post_upload.send(sender=request, path=folder, file=f, site=self)

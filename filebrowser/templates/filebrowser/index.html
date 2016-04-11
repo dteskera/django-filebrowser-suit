@@ -77,7 +77,7 @@
           <!-- OBJECT-TOOLS -->
           {% block object-tools %}
             <div class="object-tools">
-              <a href="{% url 'filebrowser:fb_createdir' %}{% query_string '' 'p' %}" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i>&nbsp;{% trans "New Folder" %}</a>
+              {% if can_create_dirs %}<a href="{% url 'filebrowser:fb_createdir' %}{% query_string '' 'p' %}" class="btn btn-primary"><i class="icon-plus-sign icon-white"></i>&nbsp;{% trans "New Folder" %}</a>{% endif %}
               <a href="{% url 'filebrowser:fb_upload' %}{% query_string '' 'p' %}" class="btn btn-success"><i class="icon-circle-arrow-up icon-white"></i>&nbsp;{% trans "Upload" %}</a>
             </div>
           {% endblock %}
