@@ -11,7 +11,6 @@ import warnings
 
 # DJANGO IMPORTS
 from django.core.files import File
-from django.utils.six import string_types
 
 # FILEBROWSER IMPORTS
 from filebrowser.settings import EXTENSIONS, VERSIONS, ADMIN_VERSIONS, VERSIONS_BASEDIR, VERSION_QUALITY, STRICT_PIL, IMAGE_MAXBLOCK, DEFAULT_PERMISSIONS
@@ -79,10 +78,15 @@ class FileListing():
         Returns:
         the sorted list of objects.
         """
-        from operator import attrgetter
-        if isinstance(attr, string_types):  # Backward compatibility hack
-            attr = (attr, )
-        return sorted(seq, key=attrgetter(*attr))
+        def _key(x):
+            value = getattr(x, attr)
+            if value is None:  # NOTE: S3 bucket folders don't have date and filesize attributes
+                value = {
+                    'date': 0.0,  # epoh datetime 01-01-1970
+                    'filesize': 0,
+                }.get(attr)
+            return value
+        return sorted(seq, key=_key)
 
     _is_folder_stored = None
 

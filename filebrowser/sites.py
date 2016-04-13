@@ -291,7 +291,7 @@ class FileBrowserSite(object):
 
         def filter_browse(item):
             "Defining a browse filter"
-            filtered = item.filename.startswith('.')
+            filtered = item.filename.startswith('.') or item.filename == ''
             for re_prefix in filter_re:
                 if re_prefix.search(item.filename):
                     filtered = True
