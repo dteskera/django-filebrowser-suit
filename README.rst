@@ -16,6 +16,7 @@ FileBrowser requires
 
 * Django 1.9 (http://www.djangoproject.com)
 * Pillow (https://github.com/python-imaging/Pillow)
+* piexif (https://github.com/hMatoba/Piexif)
 
 No Grappelli
 ------------

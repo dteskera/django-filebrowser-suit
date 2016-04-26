@@ -13,9 +13,14 @@ import warnings
 from django.core.files import File
 
 # FILEBROWSER IMPORTS
-from filebrowser.settings import EXTENSIONS, VERSIONS, ADMIN_VERSIONS, VERSIONS_BASEDIR, VERSION_QUALITY, STRICT_PIL, IMAGE_MAXBLOCK, DEFAULT_PERMISSIONS
+from filebrowser.settings import (
+    EXTENSIONS, VERSIONS, ADMIN_VERSIONS, VERSIONS_BASEDIR, VERSION_QUALITY, STRICT_PIL, IMAGE_MAXBLOCK,
+    DEFAULT_PERMISSIONS
+)
 from filebrowser.utils import path_strip, scale_and_crop
 from django.utils.encoding import python_2_unicode_compatible, smart_str
+
+import piexif
 
 # PIL import
 if STRICT_PIL:
@@ -532,10 +537,16 @@ class FileObject():
         except IOError:
             return ""
         im = Image.open(f)
+        exif_dict = piexif.load(im.info["exif"])
         version_path = self.version_path(version_suffix)
         version_dir, version_basename = os.path.split(version_path)
         root, ext = os.path.splitext(version_basename)
-        version = scale_and_crop(im, VERSIONS[version_suffix]['width'], VERSIONS[version_suffix]['height'], VERSIONS[version_suffix]['opts'])
+        version = scale_and_crop(
+            im,
+            VERSIONS[version_suffix]['width'],
+            VERSIONS[version_suffix]['height'],
+            VERSIONS[version_suffix]['opts']
+        )
         if not version:
             version = im
         # version methods as defined with VERSIONS
@@ -549,11 +560,19 @@ class FileObject():
             version = version.convert("RGB")
 
         quality = VERSIONS[version_suffix].get('quality', VERSION_QUALITY)
+        exif_bytes = piexif.dump(exif_dict)
+        kwargs = {
+            'exif': exif_bytes,
+            'format': Image.EXTENSION[ext.lower()],
+            'quality': quality,
+            'optimize': (os.path.splitext(version_path)[1] != '.gif')
+        }
         # save version
         try:
-            version.save(tmpfile, format=Image.EXTENSION[ext.lower()], quality=quality, optimize=(os.path.splitext(version_path)[1] != '.gif'))
+            version.save(tmpfile, **kwargs)
         except IOError:
-            version.save(tmpfile, format=Image.EXTENSION[ext.lower()], quality=quality)
+            kwargs.pop('optimize')
+            version.save(tmpfile, **kwargs)
         # remove old version, if any
         if version_path != self.site.storage.get_available_name(version_path):
             self.site.storage.delete(version_path)
