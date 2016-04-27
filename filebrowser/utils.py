@@ -60,30 +60,27 @@ def scale_and_crop(im, width, height, opts):
     """
     Scale and Crop.
     """
-    print(width, height, opts)
     x, y = [float(v) for v in im.size]
-    print(x, y)
+    width = float(width or 0)
+    height = float(height or 0)
 
     if 'upscale' not in opts:
-        if (x < width or not x) and (y < height or not y):
+        if (x < width or not width) and (y < height or not height):
             return False
 
     if width:
-        xr = float(width)
+        xr = width
     else:
-        xr = float(x * height / y)
-    print(xr)
+        xr = x * height / y
     if height:
-        yr = float(height)
+        yr = height
     else:
-        yr = float(y * width / x)
-    print(yr)
+        yr = y * width / x
 
     if 'crop' in opts:
         r = max(xr / x, yr / y)
     else:
         r = min(xr / x, yr / y)
-    print(r)
 
     if r < 1.0 or (r > 1.0 and 'upscale' in opts):
         im = im.resize((int(math.ceil(x * r)), int(math.ceil(y * r))), resample=Image.ANTIALIAS)

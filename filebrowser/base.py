@@ -528,9 +528,9 @@ class FileObject():
             import piexif
 
             x, y = im.size
-            e_dict = piexif.load(im.info.pop("exif"))
-            if piexif.ImageIFD.Orientation in e_dict["0th"]:
-                orientation = e_dict["0th"].pop(piexif.ImageIFD.Orientation)
+            e_dict = piexif.load(im.info['exif'])
+            if piexif.ImageIFD.Orientation in e_dict['0th']:
+                orientation = e_dict['0th'].pop(piexif.ImageIFD.Orientation)
                 if orientation == 2:
                     im = im.transpose(Image.FLIP_LEFT_RIGHT)
                 elif orientation == 3:
@@ -538,16 +538,16 @@ class FileObject():
                 elif orientation == 4:
                     im = im.rotate(180).transpose(Image.FLIP_LEFT_RIGHT)
                 elif orientation == 5:
-                    im = im.rotate(-90).transpose(Image.FLIP_LEFT_RIGHT)
+                    im = im.rotate(-90, expand=1).transpose(Image.FLIP_LEFT_RIGHT)
                     im.size = (y, x)
                 elif orientation == 6:
-                    im = im.rotate(-90)
+                    im = im.rotate(-90, expand=1)
                     im.size = (y, x)
                 elif orientation == 7:
-                    im = im.rotate(90).transpose(Image.FLIP_LEFT_RIGHT)
+                    im = im.rotate(90, expand=1).transpose(Image.FLIP_LEFT_RIGHT)
                     im.size = (y, x)
                 elif orientation == 8:
-                    im = im.rotate(90)
+                    im = im.rotate(90, expand=1)
                     im.size = (y, x)
         return im
 
