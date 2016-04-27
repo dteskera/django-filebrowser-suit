@@ -1,4 +1,5 @@
 # coding: utf-8
+from __future__ import unicode_literals
 
 # PYTHON IMPORTS
 import os
@@ -40,7 +41,7 @@ def path_exists(site, function):
         if get_path(request.GET.get('dir', ''), site=site) is None:
             msg = _('The requested Folder does not exist.')
             messages.add_message(request, messages.ERROR, msg)
-            redirect_url = reverse("filebrowser:fb_browse", current_app=site.name) + query_helper(request.GET, u"", "dir")
+            redirect_url = reverse("filebrowser:fb_browse", current_app=site.name) + query_helper(request.GET, "", "dir")
             return HttpResponseRedirect(redirect_url)
         return function(request, *args, **kwargs)
     return decorator
@@ -54,13 +55,13 @@ def file_exists(site, function):
         if file_path is None:
             msg = _('The requested File does not exist.')
             messages.add_message(request, messages.ERROR, msg)
-            redirect_url = reverse("filebrowser:fb_browse", current_app=site.name) + query_helper(request.GET, u"", "dir")
+            redirect_url = reverse("filebrowser:fb_browse", current_app=site.name) + query_helper(request.GET, "", "dir")
             return HttpResponseRedirect(redirect_url)
         elif file_path.startswith('/') or file_path.startswith('..'):
             # prevent path traversal
             msg = _('You do not have permission to access this file!')
             messages.add_message(request, messages.ERROR, msg)
-            redirect_url = reverse("filebrowser:fb_browse", current_app=site.name) + query_helper(request.GET, u"", "dir")
+            redirect_url = reverse("filebrowser:fb_browse", current_app=site.name) + query_helper(request.GET, "", "dir")
             return HttpResponseRedirect(redirect_url)
         return function(request, *args, **kwargs)
     return decorator

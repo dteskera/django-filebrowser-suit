@@ -1,4 +1,5 @@
 # coding: utf-8
+from __future__ import unicode_literals
 
 # PYTHON IMPORTS
 import os
@@ -15,12 +16,10 @@ from django.core.files import File
 # FILEBROWSER IMPORTS
 from filebrowser.settings import (
     EXTENSIONS, VERSIONS, ADMIN_VERSIONS, VERSIONS_BASEDIR, VERSION_QUALITY, STRICT_PIL, IMAGE_MAXBLOCK,
-    DEFAULT_PERMISSIONS
+    DEFAULT_PERMISSIONS, VERSION_AUTOROTATE_EXIF
 )
 from filebrowser.utils import path_strip, scale_and_crop
 from django.utils.encoding import python_2_unicode_compatible, smart_str
-
-import piexif
 
 # PIL import
 if STRICT_PIL:
@@ -480,7 +479,7 @@ class FileObject():
         "Get the filename of an original image from a version"
         tmp = self.filename_root.split("_")
         if tmp[len(tmp) - 1] in VERSIONS:
-            return u"%s%s" % (self.filename_root.replace("_%s" % tmp[len(tmp) - 1], ""), self.extension)
+            return "%s%s" % (self.filename_root.replace("_%s" % tmp[len(tmp) - 1], ""), self.extension)
         return self.filename
 
     # VERSION METHODS
@@ -524,6 +523,34 @@ class FileObject():
             version_path = self._generate_version(version_suffix)
         return FileObject(version_path, site=self.site)
 
+    def _rotate_exif_image(self, im):
+        if VERSION_AUTOROTATE_EXIF and 'exif' in im.info:
+            import piexif
+
+            x, y = im.size
+            e_dict = piexif.load(im.info.pop("exif"))
+            if piexif.ImageIFD.Orientation in e_dict["0th"]:
+                orientation = e_dict["0th"].pop(piexif.ImageIFD.Orientation)
+                if orientation == 2:
+                    im = im.transpose(Image.FLIP_LEFT_RIGHT)
+                elif orientation == 3:
+                    im = im.rotate(180)
+                elif orientation == 4:
+                    im = im.rotate(180).transpose(Image.FLIP_LEFT_RIGHT)
+                elif orientation == 5:
+                    im = im.rotate(-90).transpose(Image.FLIP_LEFT_RIGHT)
+                    im.size = (y, x)
+                elif orientation == 6:
+                    im = im.rotate(-90)
+                    im.size = (y, x)
+                elif orientation == 7:
+                    im = im.rotate(90).transpose(Image.FLIP_LEFT_RIGHT)
+                    im.size = (y, x)
+                elif orientation == 8:
+                    im = im.rotate(90)
+                    im.size = (y, x)
+        return im
+
     def _generate_version(self, version_suffix):
         """
         Generate Version for an Image.
@@ -537,7 +564,9 @@ class FileObject():
         except IOError:
             return ""
         im = Image.open(f)
-        exif_dict = piexif.load(im.info["exif"])
+
+        im = self._rotate_exif_image(im)
+
         version_path = self.version_path(version_suffix)
         version_dir, version_basename = os.path.split(version_path)
         root, ext = os.path.splitext(version_basename)
@@ -560,9 +589,7 @@ class FileObject():
             version = version.convert("RGB")
 
         quality = VERSIONS[version_suffix].get('quality', VERSION_QUALITY)
-        exif_bytes = piexif.dump(exif_dict)
         kwargs = {
-            'exif': exif_bytes,
             'format': Image.EXTENSION[ext.lower()],
             'quality': quality,
             'optimize': (os.path.splitext(version_path)[1] != '.gif')

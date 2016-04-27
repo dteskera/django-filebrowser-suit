@@ -48,6 +48,8 @@ VERSION_QUALITY = getattr(settings, 'FILEBROWSER_VERSION_QUALITY', 90)
 ADMIN_VERSIONS = getattr(settings, 'FILEBROWSER_ADMIN_VERSIONS', ['thumbnail', 'small', 'medium', 'big', 'large'])
 # Which Version should be used as Admin-thumbnail.
 ADMIN_THUMBNAIL = getattr(settings, 'FILEBROWSER_ADMIN_THUMBNAIL', 'admin_thumbnail')
+# version auto-rotate with EXIF orintation
+VERSION_AUTOROTATE_EXIF = getattr(settings, 'FILEBROWSER_VERSION_AUTOROTATE_EXIF', True)
 
 # PLACEHOLDER
 

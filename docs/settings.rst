@@ -105,6 +105,13 @@ Quality of saved versions::
 
     VERSION_QUALITY = getattr(settings, 'FILEBROWSER_VERSION_QUALITY', 90)
 
+VERSION_AUTOROTATE_EXIF
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Autorotate versions for EXIF rotated images::
+
+    VERSION_AUTOROTATE_EXIF = getattr(settings, 'FILEBROWSER_VERSION_AUTOROTATE_EXIF', True)
+
 ADMIN_VERSIONS
 ^^^^^^^^^^^^^^
 

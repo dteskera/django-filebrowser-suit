@@ -1,4 +1,5 @@
 # coding: utf-8
+from __future__ import unicode_literals
 
 # PYTHON IMPORTS
 import os
@@ -546,9 +547,9 @@ class FileListingTests(TestCase):
         # results_listing_filtered
         """
         self.assertEqual(self.f_listing_file.listing(), [])
-        self.assertEqual(list(self.f_listing.listing()), [u'fb_tmp_dir', u'testimage.jpg'])
-        self.assertEqual(list(f.path for f in self.f_listing.files_listing_total()), [u'fb_test_directory/testimage.jpg', u'fb_test_directory/fb_tmp_dir'])
-        self.assertEqual(list(f.path for f in self.f_listing.files_listing_filtered()), [u'fb_test_directory/testimage.jpg', u'fb_test_directory/fb_tmp_dir'])
+        self.assertEqual(list(self.f_listing.listing()), ['fb_tmp_dir', 'testimage.jpg'])
+        self.assertEqual(list(f.path for f in self.f_listing.files_listing_total()), ['fb_test_directory/testimage.jpg', 'fb_test_directory/fb_tmp_dir'])
+        self.assertEqual(list(f.path for f in self.f_listing.files_listing_filtered()), ['fb_test_directory/testimage.jpg', 'fb_test_directory/fb_tmp_dir'])
         self.assertEqual(self.f_listing.results_listing_total(), 2)
         self.assertEqual(self.f_listing.results_listing_filtered(), 2)
 
@@ -563,9 +564,9 @@ class FileListingTests(TestCase):
         # results_listing_filtered
         """
         self.assertEqual(self.f_listing_file.listing(), [])
-        self.assertEqual(list(self.f_listing.listing()), [u'fb_tmp_dir', u'testimage.jpg'])
-        self.assertEqual(list(f.path for f in self.f_listing.files_listing_total()), [u'fb_test_directory/testimage.jpg', u'fb_test_directory/fb_tmp_dir'])
-        self.assertEqual(list(f.path for f in self.f_listing.files_listing_filtered()), [u'fb_test_directory/testimage.jpg', u'fb_test_directory/fb_tmp_dir'])
+        self.assertEqual(list(self.f_listing.listing()), ['fb_tmp_dir', 'testimage.jpg'])
+        self.assertEqual(list(f.path for f in self.f_listing.files_listing_total()), ['fb_test_directory/testimage.jpg', 'fb_test_directory/fb_tmp_dir'])
+        self.assertEqual(list(f.path for f in self.f_listing.files_listing_filtered()), ['fb_test_directory/testimage.jpg', 'fb_test_directory/fb_tmp_dir'])
         self.assertEqual(self.f_listing.results_listing_total(), 2)
         self.assertEqual(self.f_listing.results_listing_filtered(), 2)
 
@@ -580,9 +581,9 @@ class FileListingTests(TestCase):
         # results_walk_filtered
         """
         self.assertEqual(self.f_listing_file.walk(), [])
-        self.assertEqual(list(self.f_listing.walk()), [u'fb_tmp_dir/fb_tmp_dir_sub/testimage.jpg', u'fb_tmp_dir/fb_tmp_dir_sub', u'fb_tmp_dir', u'testimage.jpg'])
-        self.assertEqual(list(f.path for f in self.f_listing.files_walk_total()), [u'fb_test_directory/testimage.jpg', u'fb_test_directory/fb_tmp_dir', u'fb_test_directory/fb_tmp_dir/fb_tmp_dir_sub', u'fb_test_directory/fb_tmp_dir/fb_tmp_dir_sub/testimage.jpg'])
-        self.assertEqual(list(f.path for f in self.f_listing.files_walk_filtered()), [u'fb_test_directory/testimage.jpg', u'fb_test_directory/fb_tmp_dir', u'fb_test_directory/fb_tmp_dir/fb_tmp_dir_sub', u'fb_test_directory/fb_tmp_dir/fb_tmp_dir_sub/testimage.jpg'])
+        self.assertEqual(list(self.f_listing.walk()), ['fb_tmp_dir/fb_tmp_dir_sub/testimage.jpg', 'fb_tmp_dir/fb_tmp_dir_sub', 'fb_tmp_dir', 'testimage.jpg'])
+        self.assertEqual(list(f.path for f in self.f_listing.files_walk_total()), ['fb_test_directory/testimage.jpg', 'fb_test_directory/fb_tmp_dir', 'fb_test_directory/fb_tmp_dir/fb_tmp_dir_sub', 'fb_test_directory/fb_tmp_dir/fb_tmp_dir_sub/testimage.jpg'])
+        self.assertEqual(list(f.path for f in self.f_listing.files_walk_filtered()), ['fb_test_directory/testimage.jpg', 'fb_test_directory/fb_tmp_dir', 'fb_test_directory/fb_tmp_dir/fb_tmp_dir_sub', 'fb_test_directory/fb_tmp_dir/fb_tmp_dir_sub/testimage.jpg'])
         self.assertEqual(self.f_listing.results_walk_total(), 4)
         self.assertEqual(self.f_listing.results_walk_filtered(), 4)
 

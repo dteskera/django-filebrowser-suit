@@ -9,7 +9,7 @@ creation of instance methods from functions.
 """
 
 # PYTHON IMPORTS
-from __future__ import with_statement
+from __future__ import with_statement, unicode_literals
 import os
 import sys
 import json
@@ -206,7 +206,7 @@ def test_overwrite(test):
         test.c.post(url, data={'qqfile': 'testimage.jpg', 'file': f}, HTTP_X_REQUESTED_WITH='XMLHttpRequest')
 
     # Check files
-    test.assertEqual(test.site.storage.listdir(test.tmpdir), ([], [u'testimage.jpg']))
+    test.assertEqual(test.site.storage.listdir(test.tmpdir), ([], ['testimage.jpg']))
 
     # OVERWRITE false
     filebrowser.sites.OVERWRITE_EXISTING = False
@@ -232,7 +232,7 @@ def test_convert_normalize(test):
 
     url = reverse('%s:fb_do_upload' % test.site_name)
     url = '?'.join([url, urlencode({'folder': test.tmpdir.path_relative_directory, 'qqfile': 'TEST IMAGE 000.jpg'})])
-    f = open(os.path.join(FILEBROWSER_PATH, u'static/filebrowser/img/TEST IMAGE 000.jpg'), "rb")
+    f = open(os.path.join(FILEBROWSER_PATH, 'static/filebrowser/img/TEST IMAGE 000.jpg'), "rb")
 
     # Save settings
     oe = filebrowser.sites.OVERWRITE_EXISTING

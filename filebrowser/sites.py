@@ -1,4 +1,5 @@
 # coding: utf-8
+from __future__ import unicode_literals
 
 # PYTHON IMPORTS
 import os
@@ -300,7 +301,7 @@ class FileBrowserSite(object):
             return True
 
         query = request.GET.copy()
-        path = u'%s' % os.path.join(self.directory, query.get('dir', ''))
+        path = '%s' % os.path.join(self.directory, query.get('dir', ''))
 
         filelisting = FileListing(
             path,
@@ -357,7 +358,7 @@ class FileBrowserSite(object):
             'page': page,
             'filelisting': filelisting,
             'query': query,
-            'title': _(u'FileBrowser'),
+            'title': _('FileBrowser'),
             'is_popup': "pop" in request.GET,   # ChangeList uses "pop"
             'settings_var': get_settings_var(directory=self.directory),
             'breadcrumbs': get_breadcrumbs(query, query.get('dir', '')),
@@ -371,7 +372,7 @@ class FileBrowserSite(object):
         "Create Directory"
         from filebrowser.forms import CreateDirForm
         query = request.GET
-        path = u'%s' % os.path.join(self.directory, query.get('dir', ''))
+        path = '%s' % os.path.join(self.directory, query.get('dir', ''))
 
         if request.method == 'POST':
             form = CreateDirForm(path, request.POST, filebrowser_site=self)
@@ -397,11 +398,11 @@ class FileBrowserSite(object):
         ctx = self._add_each_context({
             'form': form,
             'query': query,
-            'title': _(u'New Folder'),
+            'title': _('New Folder'),
             'is_popup': "pop" in request.POST,
             'settings_var': get_settings_var(directory=self.directory),
             'breadcrumbs': get_breadcrumbs(query, query.get('dir', '')),
-            'breadcrumbs_title': _(u'New Folder'),
+            'breadcrumbs_title': _('New Folder'),
             'filebrowser_site': self
         }, request)
         return render(request, 'filebrowser/createdir.html', ctx)
@@ -413,11 +414,11 @@ class FileBrowserSite(object):
         request.current_app = self.name
         ctx = self._add_each_context({
             'query': query,
-            'title': _(u'Select files to upload'),
+            'title': _('Select files to upload'),
             'is_popup': "pop" in request.POST,
             'settings_var': get_settings_var(directory=self.directory),
             'breadcrumbs': get_breadcrumbs(query, query.get('dir', '')),
-            'breadcrumbs_title': _(u'Upload'),
+            'breadcrumbs_title': _('Upload'),
             'filebrowser_site': self
         }, request)
         return render(request, 'filebrowser/upload.html', ctx)
@@ -425,7 +426,7 @@ class FileBrowserSite(object):
     def delete_confirm(self, request):
         "Delete existing File/Directory."
         query = request.GET
-        path = u'%s' % os.path.join(self.directory, query.get('dir', ''))
+        path = '%s' % os.path.join(self.directory, query.get('dir', ''))
         fileobject = FileObject(os.path.join(path, query.get('filename', '')), site=self)
         if fileobject.filetype == "Folder":
             filelisting = FileListing(
@@ -449,11 +450,11 @@ class FileBrowserSite(object):
             'filelisting': filelisting,
             'additional_files': additional_files,
             'query': query,
-            'title': _(u'Confirm delete'),
+            'title': _('Confirm delete'),
             'is_popup': "pop" in request.POST,
             'settings_var': get_settings_var(directory=self.directory),
             'breadcrumbs': get_breadcrumbs(query, query.get('dir', '')),
-            'breadcrumbs_title': _(u'Confirm delete'),
+            'breadcrumbs_title': _('Confirm delete'),
             'filebrowser_site': self
         }, request)
         return render(request, 'filebrowser/delete_confirm.html', ctx)
@@ -461,7 +462,7 @@ class FileBrowserSite(object):
     def delete(self, request):
         "Delete existing File/Directory."
         query = request.GET
-        path = u'%s' % os.path.join(self.directory, query.get('dir', ''))
+        path = '%s' % os.path.join(self.directory, query.get('dir', ''))
         fileobject = FileObject(os.path.join(path, query.get('filename', '')), site=self)
 
         if request.GET:
@@ -484,7 +485,7 @@ class FileBrowserSite(object):
         """
         from filebrowser.forms import ChangeForm
         query = request.GET
-        path = u'%s' % os.path.join(self.directory, query.get('dir', ''))
+        path = '%s' % os.path.join(self.directory, query.get('dir', ''))
         fileobject = FileObject(os.path.join(path, query.get('filename', '')), site=self)
 
         if request.method == 'POST':
@@ -525,11 +526,11 @@ class FileBrowserSite(object):
             'form': form,
             'fileobject': fileobject,
             'query': query,
-            'title': u'%s' % fileobject.filename,
+            'title': '%s' % fileobject.filename,
             'is_popup': "pop" in request.GET,
             'settings_var': get_settings_var(directory=self.directory),
             'breadcrumbs': get_breadcrumbs(query, query.get('dir', '')),
-            'breadcrumbs_title': u'%s' % fileobject.filename,
+            'breadcrumbs_title': '%s' % fileobject.filename,
             'filebrowser_site': self
         }, request)
         return render(request, 'filebrowser/detail.html', ctx)
@@ -540,7 +541,7 @@ class FileBrowserSite(object):
         This just exists in order to select a version with a filebrowser–popup.
         """
         query = request.GET
-        path = u'%s' % os.path.join(self.directory, query.get('dir', ''))
+        path = '%s' % os.path.join(self.directory, query.get('dir', ''))
         fileobject = FileObject(os.path.join(path, query.get('filename', '')), site=self)
 
         request.current_app = self.name
