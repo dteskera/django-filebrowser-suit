@@ -9,7 +9,7 @@
   &nbsp;
 </span>
 <input id="{{ final_attrs.id }}" type="text" class="vFileBrowseField{% if final_attrs.class %} {{ final_attrs.class }}{% endif %}" name="{{ final_attrs.name }}" value="{{ value.path }}" />&nbsp;
-<a href="#" class="btn btn-primary" onclick="FileBrowser.show(this.parentNode.getElementsByTagName('input')[0].id, '{{ url }}?pop=1{% if final_attrs.directory %}&amp;dir={{ final_attrs.directory|urlencode|urlencode }}{% endif %}{% if final_attrs.format %}&amp;type={{ final_attrs.format }}{% endif %}');">
+<a href="javascript:FileBrowser.show('{{ final_attrs.id }}', '{{ url }}?pop=1{% if final_attrs.directory %}&amp;dir={{ final_attrs.directory|urlencode|urlencode }}{% endif %}');" class="btn btn-primary">
   <i class="icon-search icon-white"></i>&nbsp;{% trans "Change" %}
 </a>
 {% if value and not value.exists %}
