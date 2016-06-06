@@ -572,9 +572,9 @@ class FileObject():
         root, ext = os.path.splitext(version_basename)
         version = scale_and_crop(
             im,
-            VERSIONS[version_suffix]['width'],
-            VERSIONS[version_suffix]['height'],
-            VERSIONS[version_suffix]['opts']
+            VERSIONS[version_suffix].get('width', 0),
+            VERSIONS[version_suffix].get('height', 0),
+            VERSIONS[version_suffix].get('opts', {})
         )
         if not version:
             version = im
