@@ -574,7 +574,7 @@ class FileObject():
             im,
             VERSIONS[version_suffix].get('width', 0),
             VERSIONS[version_suffix].get('height', 0),
-            VERSIONS[version_suffix].get('opts', {})
+            VERSIONS[version_suffix].get('opts', '')
         )
         if not version:
             version = im
