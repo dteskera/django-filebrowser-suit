@@ -564,6 +564,7 @@ class FileObject():
         except IOError:
             return ""
         im = Image.open(f)
+        icc_profile = im.info.get("icc_profile")
 
         im = self._rotate_exif_image(im)
 
@@ -592,7 +593,8 @@ class FileObject():
         kwargs = {
             'format': Image.EXTENSION[ext.lower()],
             'quality': quality,
-            'optimize': (os.path.splitext(version_path)[1] != '.gif')
+            'optimize': (os.path.splitext(version_path)[1] != '.gif'),
+            'icc_profile': icc_profile,
         }
         # save version
         try:
