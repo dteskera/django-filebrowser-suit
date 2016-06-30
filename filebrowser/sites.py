@@ -33,7 +33,7 @@ except ImportError:
 from filebrowser.actions import flip_horizontal, flip_vertical, rotate_90_clockwise, rotate_90_counterclockwise, rotate_180
 from filebrowser.settings import DIRECTORY, EXTENSIONS, SELECT_FORMATS, ADMIN_VERSIONS, ADMIN_THUMBNAIL, MAX_UPLOAD_SIZE,\
     NORMALIZE_FILENAME, CONVERT_FILENAME, SEARCH_TRAVERSE, EXCLUDE, VERSIONS, VERSIONS_BASEDIR, EXTENSION_LIST, DEFAULT_SORTING_BY, DEFAULT_SORTING_ORDER,\
-    LIST_PER_PAGE, OVERWRITE_EXISTING, DEFAULT_PERMISSIONS, UPLOAD_TEMPDIR
+    LIST_PER_PAGE, OVERWRITE_EXISTING, DEFAULT_PERMISSIONS, UPLOAD_TEMPDIR, EXCLUDE_VERSIONS_BASEDIR
 from filebrowser.templatetags.fb_tags import query_helper
 from filebrowser.base import FileListing, FileObject
 from filebrowser.decorators import path_exists, file_exists
@@ -293,6 +293,8 @@ class FileBrowserSite(object):
         def filter_browse(item):
             "Defining a browse filter"
             filtered = item.filename.startswith('.') or item.filename == ''
+            if EXCLUDE_VERSIONS_BASEDIR:
+                filtered = filtered or item.filename == VERSIONS_BASEDIR
             for re_prefix in filter_re:
                 if re_prefix.search(item.filename):
                     filtered = True
