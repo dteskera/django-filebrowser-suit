@@ -14,7 +14,7 @@
       <div class="btn-group">
       <!-- select original -->
       {% if query.pop == "1" %}{# FILESELECT FOR FILEBROWSEFIELD #}
-        <button class="btn btn-primary" onclick="FileSubmit('{{ fileobject.path }}', '{{ fileobject.url|escapejs }}', '{{ thumbnail_version.url|escapejs }}', '{{ fileobject.filetype }}');">{% trans "Select" %}</button>
+        <button class="btn btn-primary" onclick="FileSubmit('{{ fileobject.path|escapejs }}', '{{ fileobject.url|escapejs }}', '{{ thumbnail_version.url|escapejs }}', '{{ fileobject.filetype }}');">{% trans "Select" %}</button>
       {% endif %}
       {% if query.pop == "2" %}{# FILESELECT FOR RTE/TINYMCE #}
         <button class="btn btn-primary" onclick="FileBrowserDialogue.fileSubmit('{{ fileobject.url|escapejs }}');">{% trans "Select" %}</button>
